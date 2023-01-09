@@ -1,10 +1,13 @@
 package nextstep.helloworld.jdbc.simpleinsert;
 
 import nextstep.helloworld.jdbc.Customer;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
 
 @Repository
 public class SimpleInsertDao {
@@ -22,7 +25,13 @@ public class SimpleInsertDao {
      * id를 포함한 Customer 객체를 반환하세요
      */
     public Customer insertWithMap(Customer customer) {
-        return null;
+        HashMap<String, String> paramMap = new HashMap<>();
+        paramMap.put("first_name", customer.getFirstName());
+        paramMap.put("last_name", customer.getLastName());
+
+        Number id = insertActor.executeAndReturnKey(paramMap);
+
+        return new Customer(id.longValue(), customer.getFirstName(), customer.getLastName());
     }
 
     /**
@@ -31,6 +40,8 @@ public class SimpleInsertDao {
      * id를 포함한 Customer 객체를 반환하세요
      */
     public Customer insertWithBeanPropertySqlParameterSource(Customer customer) {
-        return null;
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(customer);
+        Number id = insertActor.executeAndReturnKey(parameterSource);
+        return new Customer(id.longValue(), customer.getFirstName(), customer.getLastName());
     }
 }
